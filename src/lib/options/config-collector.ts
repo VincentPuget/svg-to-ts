@@ -7,13 +7,20 @@ import { MultiFileConvertionOptions, SingleFileConvertionOptions } from './conve
 import { DEFAULT_OPTIONS } from './default-options';
 import { getSvgoConfig } from '../helpers/svg-optimization';
 
-export const collectConfigurationOptions = async (): Promise<
-  SingleFileConvertionOptions | MultiFileConvertionOptions | null
-> => {
+export const collectConfigurationOptions = async (): Promise<Array<
+  SingleFileConvertionOptions | MultiFileConvertionOptions
+> | null> => {
   const explorerSync = cosmiconfigSync(packgeJSON.name);
-  const cosmiConfigResult = explorerSync.search();
+  const cosmiConfigResult = explorerSync.search()?.config;
   cosmiConfigResult ? info(`Configuration found under: ${cosmiConfigResult.filepath}`) : info('No config found');
-  return cosmiConfigResult ? await mergeWithDefaults(cosmiConfigResult.config) : null;
+
+  if (!cosmiConfigResult) {
+    return null;
+  }
+  if (Array.isArray(cosmiConfigResult)) {
+    return Promise.all(cosmiConfigResult.map(config => mergeWithDefaults(config)));
+  }
+  return [await mergeWithDefaults(cosmiConfigResult)];
 };
 
 const mergeWithDefaults = async (

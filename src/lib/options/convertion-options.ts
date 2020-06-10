@@ -27,7 +27,7 @@ export interface MultiFileConvertionOptions extends ConvertionOptions {
   compileSources: boolean;
 }
 
-export const getOptions = async (): Promise<MultiFileConvertionOptions | SingleFileConvertionOptions> => {
+export const getOptions = async (): Promise<Array<MultiFileConvertionOptions | SingleFileConvertionOptions>> => {
   const configOptions = await collectConfigurationOptions();
 
   if (configOptions) {
@@ -36,5 +36,5 @@ export const getOptions = async (): Promise<MultiFileConvertionOptions | SingleF
   info(
     'No configuration found in package.json nor rc file - checking for arguments and applying defaults (see --help)'
   );
-  return collectArgumentOptions();
+  return [await collectArgumentOptions()];
 };

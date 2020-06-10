@@ -10,9 +10,11 @@ import { setupCommander } from '../lib/options/args-collector';
   printLogo();
   const convertionOptions = await getOptions();
 
-  if (convertionOptions.optimizeForLazyLoading) {
-    await convertToMultipleFiles(convertionOptions as MultiFileConvertionOptions);
-  } else {
-    await convertToSingleFile(convertionOptions as SingleFileConvertionOptions);
+  for (const options of convertionOptions) {
+    if (options.optimizeForLazyLoading) {
+      await convertToMultipleFiles(options as MultiFileConvertionOptions);
+    } else {
+      await convertToSingleFile(options as SingleFileConvertionOptions);
+    }
   }
 })();
